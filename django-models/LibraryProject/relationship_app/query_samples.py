@@ -1,7 +1,6 @@
 import os
 import django
 
-# Setup Django environment so the script works standalone
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
 django.setup()
 
@@ -18,7 +17,7 @@ for book in books_by_author:
     print("-", book.title)
 
 # -------------------------------
-# ✅ List all books in a specific library
+# ✅ List all books in a library
 library_name = "Central Library"
 library = Library.objects.get(name=library_name)
 books_in_library = library.books.all()
@@ -28,6 +27,10 @@ for book in books_in_library:
     print("-", book.title)
 
 # -------------------------------
-# ✅ Get the librarian for a library
-librarian = library.librarian  # Uses related_name from the OneToOneField
-print(f"\nLibrarian for {library.name}: {librarian.name}")
+# ✅ Get the librarian — method A (related_name)
+librarian_via_related = library.librarian
+print(f"\nLibrarian via related_name: {librarian_via_related.name}")
+
+# ✅ Get the librarian — method B (objects.get)
+librarian_via_query = Librarian.objects.get(library=library)
+print(f"Librarian via .objects.get: {librarian_via_query.name}")
