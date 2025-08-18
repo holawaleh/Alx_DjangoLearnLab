@@ -1,36 +1,47 @@
-import os
-import django
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
-django.setup()
+"""
+Sample queries for relationship_app models.
+Run this inside Django shell: python manage.py shell
+"""
 
 from relationship_app.models import Author, Book, Library, Librarian
 
-# -------------------------------
-# ✅ Query all books by a specific author
-author_name = "John Doe"
-author = Author.objects.get(name=author_name)
-books_by_author = Book.objects.filter(author=author)
 
-print(f"Books by {author.name}:")
-for book in books_by_author:
-    print("-", book.title)
+def query_all_books_by_author(author_name):
+    """Query: All books by a specific author"""
+    try:
+        author = Author.objects.get(name=author_name)
+        books = author.books.all()  # Uses related_name='books'
+        print(f"\nBooks by {author_name}:")
+        for book in books:
+            print(f" - {book.title}")
+    except Author.DoesNotExist:
+        print(f"Author '{author_name}' not found.")
 
-# -------------------------------
-# ✅ List all books in a library
-library_name = "Central Library"
-library = Library.objects.get(name=library_name)
-books_in_library = library.books.all()
 
-print(f"\nBooks in {library.name}:")
-for book in books_in_library:
-    print("-", book.title)
+def list_all_books_in_library(library_name):
+    """Query: All books in a specific library"""
+    try:
+        library = Library.objects.get(name=library_name)
+        books = library.books.all()
+        print(f"\nBooks in {library_name}:")
+        for book in books:
+            print(f" - {book.title}")
+    except Library.DoesNotExist:
+        print(f"Library '{library_name}' not found.")
 
-# -------------------------------
-# ✅ Get the librarian — method A (related_name)
-librarian_via_related = library.librarian
-print(f"\nLibrarian via related_name: {librarian_via_related.name}")
 
-# ✅ Get the librarian — method B (objects.get)
-librarian_via_query = Librarian.objects.get(library=library)
-print(f"Librarian via .objects.get: {librarian_via_query.name}")
+def retrieve_librarian_for_library(library_name):
+    """Query: Librarian for a specific library"""
+    try:
+        library = Library.objects.get(name=library_name)
+        librarian = library.librarian  # OneToOne reverse lookup
+        print(f"\nLibrarian for {library_name}: {librarian.name}")
+    except Library.DoesNotExist:
+        print(f"Library '{library_name}' not found.")
+    except Librarian.DoesNotExist:
+        print(f"No librarian assigned to {library_name}.")
+
+
+# Optional: Add this block to prevent auto-execution
+if __name__ == "__main__":
+    print("This script is meant to be run inside Django shell.")

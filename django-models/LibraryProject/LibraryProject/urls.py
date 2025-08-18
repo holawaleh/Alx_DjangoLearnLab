@@ -1,10 +1,8 @@
-from django.urls import path
-from . import views
+# LibraryProject/urls.py
+from django.contrib import admin
+from django.urls import include, path
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('books/', views.book_list, name='book_list'),
-    path('books/<int:book_id>/', views.book_detail, name='book_detail'),
-    path('libraries/', views.library_list, name='library_list'),
-    path('books/author/<str:author_name>/', views.books_by_author, name='books_by_author'),
+    path('admin/', admin.site.urls),
+    path('', include('bookshelf.urls')),  # ✅ Include all bookshelf URLs
 ]
