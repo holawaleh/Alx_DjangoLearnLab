@@ -1,0 +1,17 @@
+<!-- relationship_app/templates/relationship_app/member_view.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Member Zone</title>
+</head>
+
+<body>
+  <h1>📖 Member Access</h1>
+  <p>Hi, <strong>{{ user.username }}</strong>! Browse and enjoy books.</p>
+  <a href="{% url 'list_books' %}">Browse Books</a> |
+  <a href="{% url 'logout' %}">Logout</a>
+</body>
+
+</html>
