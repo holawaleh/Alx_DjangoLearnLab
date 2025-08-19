@@ -1,0 +1,17 @@
+<!-- relationship_app/templates/relationship_app/librarian_view.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Librarian Access</title>
+</head>
+
+<body>
+  <h1>📚 Librarian Desk</h1>
+  <p>Hello, <strong>{{ user.username }}</strong>! You can manage books and libraries.</p>
+  <a href="{% url 'list_books' %}">View All Books</a> |
+  <a href="{% url 'logout' %}">Logout</a>
+</body>
+
+</html>
