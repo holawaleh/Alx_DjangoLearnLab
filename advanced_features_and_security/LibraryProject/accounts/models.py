@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
@@ -16,11 +17,28 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, password, **extra_fields)
 
+
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
 
-    objects = CustomUserManager()  # Use the custom manager
+    # Fix reverse accessor clashes
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='customuser_set',  # ← Add this
+        blank=True,
+        help_text='The groups this user belongs to.',
+        related_query_name='customuser',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='customuser_set',  # ← Add this
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_query_name='customuser',
+    )
+
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.username
