@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse("Hello, this is the Blog homepage!")
+    return render(request, "blog/base.html")
+
+def posts(request):
+    return render(request, "blog/posts.html")  # create this template later
