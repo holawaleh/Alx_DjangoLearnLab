@@ -4,12 +4,43 @@
 <div class="home-content">
   <h1>Welcome to Django Blog</h1>
   <p>This is a simple blog application built with Django.</p>
+
   {% if user.is_authenticated %}
   <p>Hello, {{ user.username }}! You are logged in.</p>
   <a href="{% url 'posts' %}" class="btn btn-primary">View Blog Posts</a>
+  <a href="{% url 'post-create' %}" class="btn btn-success">Create New Post</a>
   {% else %}
   <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to view and create blog
     posts.</p>
   {% endif %}
+
+  <div class="recent-posts">
+    <h2>Recent Posts</h2>
+
+    {% if recent_posts %}
+    {% for post in recent_posts %}
+    <div class="recent-post-card">
+      <h3><a href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h3>
+      <p class="post-meta">By {{ post.author }} on {{ post.published_date|date:"F d, Y" }}</p>
+
+      {% if post.tags.all %}
+      <div class="post-tags">
+        <strong>Tags:</strong>
+        {% for tag in post.tags.all %}
+        <a href="{% url 'posts-by-tag' tag.name %}" class="tag">{{ tag.name }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <p>{{ post.content|truncatewords:20 }}</p>
+      <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline-primary">Read More</a>
+    </div>
+    {% endfor %}
+
+    <a href="{% url 'posts' %}" class="btn btn-outline-primary">View All Posts</a>
+    {% else %}
+    <p>No blog posts available.</p>
+    {% endif %}
+  </div>
 </div>
 {% endblock content %}
