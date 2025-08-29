@@ -1,8 +1,8 @@
-# blog/forms.py
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile, Post
+from .models import Profile, Post, Comment
+
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -18,6 +18,7 @@ class UserRegisterForm(UserCreationForm):
             user.save()
         return user
 
+
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField(required=True)
     
@@ -25,10 +26,12 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['username', 'email', 'first_name', 'last_name']
 
+
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['image', 'bio']
+
 
 class PostForm(forms.ModelForm):
     class Meta:
@@ -37,4 +40,17 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
+        }
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Write your comment here...'
+            }),
         }
