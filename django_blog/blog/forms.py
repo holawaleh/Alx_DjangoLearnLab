@@ -5,6 +5,16 @@ from .models import Profile, Post, Comment
 from taggit.forms import TagWidget
 
 
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'tags']   # <-- include tags
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
+            'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Add tags...'}),  # <-- TagWidget
+        }
+
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     
