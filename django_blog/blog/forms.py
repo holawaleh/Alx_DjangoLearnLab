@@ -8,12 +8,13 @@ from taggit.forms import TagWidget
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'tags']   # <-- include tags
+        fields = ['title', 'content', 'tags']   # include tags
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
-            'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Add tags...'}),  # <-- TagWidget
+            'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Add tags...'}),
         }
+
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -44,16 +45,6 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['image', 'bio']
 
 
-class PostForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = ['title', 'content']
-        widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
-        }
-
-
 class SearchForm(forms.Form):
     query = forms.CharField(
         max_length=100,
@@ -62,7 +53,7 @@ class SearchForm(forms.Form):
             'class': 'form-control',
             'placeholder': 'Search posts...'
         })
-    )  # <-- fixed closing parenthesis
+    )
 
 
 class CommentForm(forms.ModelForm):
