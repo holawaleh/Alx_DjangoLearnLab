@@ -4,15 +4,43 @@
 <div class="posts-content">
   <h1>Blog Posts</h1>
 
+  {% if user.is_authenticated %}
+  <div class="mb-4">
+    <a href="{% url 'post-create' %}" class="btn btn-primary">Create New Post</a>
+  </div>
+  {% endif %}
+
   {% if posts %}
   {% for post in posts %}
   <div class="post-card">
-    <h2>{{ post.title }}</h2>
+    <h2><a href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
     <p class="post-meta">By {{ post.author }} on {{ post.published_date|date:"F d, Y" }}</p>
     <p>{{ post.content|truncatewords:30 }}</p>
-    <a href="#" class="btn btn-secondary">Read More</a>
+    <a href="{% url 'post-detail' post.id %}" class="btn btn-secondary">Read More</a>
   </div>
   {% endfor %}
+
+  {% if is_paginated %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page=1" class="btn btn-outline-info">First</a>
+    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-info">Previous</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+    {% if page_obj.number == num %}
+    <a href="?page={{ num }}" class="btn btn-info">{{ num }}</a>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}"
+      class="btn btn-outline-info">{{ num }}</a>
+      {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info">Next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-info">Last</a>
+      {% endif %}
+  </div>
+  {% endif %}
   {% else %}
   <p>No blog posts available.</p>
   {% endif %}
