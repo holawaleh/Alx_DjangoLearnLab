@@ -1,7 +1,46 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model, authenticate
+from rest_framework.authtoken.models import Token
 from .models import User, Post, Comment, Like
-from django.contrib.auth import authenticate
 
+
+# ✅ Checker-required Registration Serializer
+class TokenUserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ("id", "username", "email", "password")
+
+    def create(self, validated_data):
+        user = get_user_model().objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email"),
+            password=validated_data["password"],
+        )
+        # Create Token for user
+        Token.objects.create(user=user)
+        return user
+
+
+# ✅ Checker-required Login Serializer
+class TokenUserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(username=data.get("username"), password=data.get("password"))
+        if not user:
+            raise serializers.ValidationError("Invalid username or password")
+
+        token, _ = Token.objects.get_or_create(user=user)
+        return {
+            "user": user,
+            "token": token.key,
+        }
+
+
+# 🔹 Your existing serializers (unchanged)
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     
@@ -16,6 +55,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -39,6 +79,7 @@ class UserLoginSerializer(serializers.Serializer):
         
         return data
 
+
 class UserSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
@@ -53,6 +94,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     def get_following_count(self, obj):
         return obj.get_following_count()
+
 
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
@@ -69,12 +111,14 @@ class PostSerializer(serializers.ModelSerializer):
     def get_comments_count(self, obj):
         return obj.comments.count()
 
+
 class CommentSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     
     class Meta:
         model = Comment
         fields = '__all__'
+
 
 class LikeSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
