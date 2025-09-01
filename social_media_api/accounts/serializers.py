@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework.authtoken.models import Token
-from .models import Post, Comment, Like
+from .models import User
+from posts.models import Post, Comment, Like
 
 
 User = get_user_model()

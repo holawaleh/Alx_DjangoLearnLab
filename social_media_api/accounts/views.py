@@ -2,7 +2,8 @@ from rest_framework import generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import User, Post, Comment, Like
+from .models import User
+from posts.models import Post, Comment, Like
 from .serializers import (
     TokenUserRegistrationSerializer,
     TokenUserLoginSerializer,
