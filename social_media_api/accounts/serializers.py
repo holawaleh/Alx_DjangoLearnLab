@@ -40,9 +40,19 @@ class UserLoginSerializer(serializers.Serializer):
         return data
 
 class UserSerializer(serializers.ModelSerializer):
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'bio', 'profile_picture', 'date_of_birth', 'website', 'location')
+        fields = ('id', 'username', 'email', 'bio', 'profile_picture', 
+                 'date_of_birth', 'website', 'location', 'followers_count', 'following_count')
+    
+    def get_followers_count(self, obj):
+        return obj.get_followers_count()
+    
+    def get_following_count(self, obj):
+        return obj.get_following_count()
 
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)

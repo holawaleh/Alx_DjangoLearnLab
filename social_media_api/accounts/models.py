@@ -9,12 +9,34 @@ class User(AbstractUser):
     date_of_birth = models.DateField(blank=True, null=True)
     website = models.URLField(blank=True)
     location = models.CharField(max_length=100, blank=True)
+    followers = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        related_name='following',
+        blank=True
+    )
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     
     def __str__(self):
         return self.username
+
+    def follow(self, user):
+        self.following.add(user)
+    
+    def unfollow(self, user):
+        self.following.remove(user)
+    
+    def is_following(self, user):
+        return self.following.filter(id=user.id).exists()
+    
+    def get_followers_count(self):
+        return self.followers.count()
+    
+    def get_following_count(self):
+        return self.following.count()
+
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
@@ -29,6 +51,7 @@ class Post(models.Model):
     def __str__(self):
         return f"Post by {self.author.username} at {self.created_at}"
 
+
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -40,6 +63,7 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"Comment by {self.author.username} on {self.post}"
+
 
 class Like(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
