@@ -1,0 +1,72 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<article class="post-detail">
+  <h1 class="post-title">{{ object.title }}</h1>
+  <div class="post-meta">
+    <span class="author">By {{ object.author }}</span>
+    <span class="date">{{ object.published_date|date:"F d, Y" }}</span>
+  </div>
+
+  {% if object.tags.all %}
+  <div class="post-tags">
+    <strong>Tags:</strong>
+    {% for tag in object.tags.all %}
+    <a href="{% url 'posts-by-tag' tag.name %}" class="tag">{{ tag.name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="post-content">
+    {{ object.content|linebreaks }}
+  </div>
+  {% if object.author == user %}
+  <div class="post-actions">
+    <a href="{% url 'post-update' object.id %}" class="btn btn-primary">Edit</a>
+    <a href="{% url 'post-delete' object.id %}" class="btn btn-danger">Delete</a>
+  </div>
+  {% endif %}
+</article>
+
+<section class="comments-section">
+  <h2>Comments ({{ comments.count }})</h2>
+
+  {% if user.is_authenticated %}
+  <div class="add-comment">
+    <h3>Add a Comment</h3>
+    <form method="POST" action="{% url 'add-comment' object.id %}" id="comment-form">
+      {% csrf_token %}
+      {{ comment_form|crispy }}
+      <button type="submit" class="btn btn-primary">Submit Comment</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    <a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a> to leave a comment.
+  </div>
+  {% endif %}
+
+  <div class="comments-list">
+    {% for comment in comments %}
+    <div class="comment-card" id="comment-{{ comment.id }}">
+      <div class="comment-header">
+        <span class="comment-author">{{ comment.author }}</span>
+        <span class="comment-date">{{ comment.created_at|date:"F d, Y at H:i" }}</span>
+      </div>
+      <div class="comment-content">
+        {{ comment.content|linebreaks }}
+      </div>
+      {% if user == comment.author %}
+      <div class="comment-actions">
+        <a href="{% url 'comment-update' comment.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <a href="{% url 'comment-delete' comment.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+      </div>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p class="text-muted">No comments yet. Be the first to comment!</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock content %}
